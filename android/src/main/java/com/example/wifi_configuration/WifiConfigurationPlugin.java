@@ -37,6 +37,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.flutter.plugin.common.MethodCall;
@@ -211,17 +212,26 @@ public class WifiConfigurationPlugin implements MethodCallHandler {
      *
      * @return
      */
-    private  static List<String> getAvailableWifiList() {
-        List<String> wifiList = new ArrayList<String>();
+    private  static List<HashMap> getAvailableWifiList() {
+        List<HashMap> wifiList = new ArrayList<HashMap>();
         if (wifiUtils.getScanWifiResult() != null){
             Log.d("WifiResults-->", wifiUtils.getScanWifiResult()+"");
 
-            for (ScanResult wifiName : wifiUtils.getScanWifiResult()
-            ) {
+            for (ScanResult wifiName : wifiUtils.getScanWifiResult()) {
                 Log.d("WifiUtils", wifiName.SSID);
-                wifiList.add(wifiName.SSID);
+                WifiType type = new WifiType();
+                type.SSID = wifiName.SSID;
+                type.capabilities = wifiName.capabilities;
+                type.centerFreq0 = wifiName.centerFreq0;
+                type.centerFreq1 = wifiName.centerFreq1;
+                type.channelWidth = wifiName.channelWidth;
+                type.frequency = wifiName.frequency;
+                type.level = wifiName.level;
+                type.operatorFriendlyName = wifiName.operatorFriendlyName.toString();
+                type.timestamp = wifiName.timestamp;
+                type.venueName = wifiName.venueName.toString();
+                wifiList.add(type.toMap());
             }
-            return wifiList;
         }
         return wifiList;
     }

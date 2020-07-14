@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-import 'package:flutter/services.dart';
+
 import 'package:wifi_configuration/wifi_configuration.dart';
 
 void main() => runApp(MyApp());
@@ -31,7 +30,9 @@ class _MyAppState extends State<MyApp> {
 
   void getConnectionState() async {
     var listAvailableWifi = await WifiConfiguration.getWifiList();
-    print("get wifi list : " + listAvailableWifi.toString());
+    for (final tmp in listAvailableWifi) {
+      print("${tmp.SSID} - ${tmp.level}");
+    }
     WifiConnectionStatus connectionStatus = await WifiConfiguration.connectToWifi(
         "DarkBe@rs", "DarkBe@rs", "com.example.wifi_configuration_example");
     print("is Connected : ${connectionStatus}");
