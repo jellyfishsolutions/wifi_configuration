@@ -24,16 +24,20 @@ class WifiType {
     String venueName;
 
     WifiType(dynamic obj) {
-      SSID = obj['SSID'];
-      capabilities = obj['capabilities'];
-      centerFreq0 = obj['centerFreq0'];
-      centerFreq1 = obj['centerFreq1'];
-      channelWidth = obj['channelWidth'];
-      frequency = obj['frequency'];
-      level = obj['level'];
-      operatorFriendlyName = obj['operatorFriendlyName'];
-      timestamp = obj['timestamp'];
-      venueName = obj['venueName'];
+      if (obj is String) {
+        SSID = obj;
+      } else {
+        SSID = obj['SSID'];
+        capabilities = obj['capabilities'];
+        centerFreq0 = obj['centerFreq0'];
+        centerFreq1 = obj['centerFreq1'];
+        channelWidth = obj['channelWidth'];
+        frequency = obj['frequency'];
+        level = obj['level'];
+        operatorFriendlyName = obj['operatorFriendlyName'];
+        timestamp = obj['timestamp'];
+        venueName = obj['venueName'];
+      }
     }
 
 }
