@@ -48,7 +48,12 @@ public class SwiftWifiConfigurationPlugin: NSObject, FlutterPlugin {
     public func connectToWifi(result: @escaping FlutterResult, ssid: String, password:String) {
         print("ssid : \(ssid) \n pass: \(password)")
         if #available(iOS 11.0, *) {
-            let configuration = NEHotspotConfiguration(ssid: ssid, passphrase: password, isWEP: false)
+            var configuration: NEHotspotConfiguration!
+            if password.count == 0 {
+                configuration = NEHotspotConfiguration(ssid: ssid)
+            } else {
+                configuration = NEHotspotConfiguration(ssid: ssid, passphrase: password, isWEP: false)
+            }
             NEHotspotConfigurationManager.shared.removeConfiguration(forSSID: ssid)
             
             NEHotspotConfigurationManager.shared.apply(configuration) { (error) in
