@@ -19,6 +19,8 @@ dev_dependencies:
 
   wifi_configuration:
     path: ../
+    
+  http: ^0.12.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

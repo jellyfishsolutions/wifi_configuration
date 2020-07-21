@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 
 import com.example.wifi_configuration.connect.ConnectionSuccessListener;
+import com.example.wifi_configuration.manager.WifiConnectionManage;
 import com.example.wifi_configuration.manager.WifiUtils;
 import com.example.wifi_configuration.util.Constant;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -186,6 +189,9 @@ public class WifiConfigurationPlugin implements MethodCallHandler {
      */
     private static void connectWithWPA(String ssid, String password, Context context, Result result) {
 
+
+
+
         wifiUtils.withContext(context)
                 .connectWith(ssid +
                         "", password)
@@ -194,6 +200,15 @@ public class WifiConfigurationPlugin implements MethodCallHandler {
                     @Override
                     public void isSuccessful(boolean isSuccess) {
                         if (isSuccess) {
+                            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                            Network network = cm.getActiveNetwork();
+                            Log.e("wifi_configuration_WifiConnection", "current network: "+network.toString());
+                            boolean _result = cm.bindProcessToNetwork(network);
+                            if (_result) {
+                                Log.e("wifi_configuration_WifiConnection", "process bind");
+                            } else {
+                                Log.e("wifi_configuration_WifiConnection", "error on process bind");
+                            }
                             result.success(WifiStatus.connected.name());
                         } else {
                             // Constant.result.success("Please make sure your password and ssid is correct");

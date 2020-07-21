@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 
 import 'package:wifi_configuration/wifi_configuration.dart';
@@ -28,14 +31,20 @@ class _MyAppState extends State<MyApp> {
     getConnectionState();
   }
 
+
+  void testConnection() async {
+    final result = await http.get("http://192.168.5.1:8888");
+    print("result: ${result.body}");
+  }
+
   void getConnectionState() async {
     var listAvailableWifi = await WifiConfiguration.getWifiList();
     for (final tmp in listAvailableWifi) {
       print("${tmp.SSID} - ${tmp.level}");
     }
     WifiConnectionStatus connectionStatus = await WifiConfiguration.connectToWifi(
-        "DarkBe@rs", "DarkBe@rs", "com.example.wifi_configuration_example");
-    print("is Connected : ${connectionStatus}");
+        "Powahome-a020a6222a3eR", "", "com.example.wifi_configuration_example");
+    print("is Connected 2: ${connectionStatus}");
 //
 //
     switch (connectionStatus) {
@@ -82,10 +91,11 @@ class _MyAppState extends State<MyApp> {
             child: Text("connect"),
             onPressed: () async {
               WifiConnectionStatus connectionStatus = await WifiConfiguration.connectToWifi(
-                  "Ukey-2.4",
-                  "QATest@2019",
+                  "Powahome-a020a6222a3eR",
+                  "",
                   "com.example.wifi_configuration_example");
-              print("is Connected : ${connectionStatus}");
+              print("is Connected 3: ${connectionStatus}");
+              testConnection();
             },
           ),
         ),

@@ -7,6 +7,8 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -61,8 +63,7 @@ public class WifiConnectionManage {
         }
     }
 
-    private void getConnectedList(final WifiManager wifiManager, final Activity activity, final String ssid,
-                                  final String passowrd) {
+    private void getConnectedList(final WifiManager wifiManager, final Activity activity, final String ssid, final String passowrd) {
         ArrayList<ScanResult> list = (ArrayList<ScanResult>) wifiManager.getScanResults();
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         String wifiConnected = "'" + wifiInfo.getSSID() + "'";
@@ -83,13 +84,13 @@ public class WifiConnectionManage {
                              final String ssid, ScanResult scanResult, final Context context, String password) {
         Log.e("wifi_configuration_WifiConnection", "with ssid " + ssid + "and password " + password);
         try {
-            String networkSSID = scanResult.SSID;
+            String networkSSID = ssid;
             String networkPass = password;
             WifiConfiguration conf = new WifiConfiguration();
             conf.SSID = "\"" + networkSSID + "\"";   // Please note the quotes. String should contain ssid in quotes
             conf.status = WifiConfiguration.Status.ENABLED;
             conf.priority = 99999;
-            if (scanResult.capabilities.toUpperCase().contains("WEP")) {
+            if (scanResult != null && scanResult.capabilities.toUpperCase().contains("WEP")) {
              //   Utility.log("rht", "Configuring WEP");
                 conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
                 conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
@@ -109,7 +110,7 @@ public class WifiConnectionManage {
 
                 conf.wepTxKeyIndex = 0;
 
-            } else if (scanResult.capabilities.toUpperCase().contains("WPA")) {
+            } else if (scanResult != null && scanResult.capabilities.toUpperCase().contains("WPA")) {
 
                 conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
                 conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
@@ -140,12 +141,22 @@ public class WifiConnectionManage {
             WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             int networkId = wifiManager.addNetwork(conf);
             WifiUtils.wifiLog("network id");
-            List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-            for (WifiConfiguration i : list) {
-                if (i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
-                    break;
-                }
+            WifiInfo wifi_inf = wifiManager.getConnectionInfo();
+            wifiManager.disableNetwork(wifi_inf.getNetworkId());
+            wifiManager.enableNetwork(networkId, true);
+            
+            Log.e("wifi_configuration_WifiConnection", "trying forcing connection to current wifi");
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            Network network = cm.getActiveNetwork();
+            Log.e("wifi_configuration_WifiConnection", "current network: "+network.toString());
+            boolean result = cm.bindProcessToNetwork(network);
+            if (result) {
+                Log.e("wifi_configuration_WifiConnection", "process bind");
+            } else {
+                Log.e("wifi_configuration_WifiConnection", "error on process bind");
             }
+            System.out.println("tanto non ci arriva");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
